@@ -1,0 +1,32 @@
+{
+ "format": 1,
+ "tools": {
+  "hpip": {
+   "version": "0.4.1",
+   "description": "pip for Hegd: pure-Python libraries from PyPI, with a registry, freeze and verify",
+   "files": [
+    {
+     "path": "hpiptool/hpip.py",
+     "name": "hpip.py",
+     "sha256": "7c03250f32a5c5692c7151a9feadc91fb56ed25c8c905868c219fe94be0ebb00"
+    }
+   ]
+  },
+  "network": {
+   "version": "1.0",
+   "description": "share a folder in a browser on the same Wi-Fi (sv.py)",
+   "files": [
+    {
+     "path": "network/hegd_sv.py",
+     "name": "hegd_sv.py",
+     "sha256": "901d65a7041f66939ff3e6eed79432c23a77399ced242063b1cb0c80ddb232c0"
+    },
+    {
+     "path": "network/sv.py",
+     "name": "sv.py",
+     "sha256": "8e603224d74941f1ea0d57d6b9dc32a0ed9984a79cc3c4c944caf8a4f4437689"
+    }
+   ]
+  }
+ }
+}
