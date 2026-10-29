@@ -1,0 +1,24 @@
+# Сборка и кэш Buildozer
+.buildozer/
+bin/
+*.apk
+*.aab
+
+# Кэш Python
+__pycache__/
+*.pyc
+
+# Бэкапы и состояние tul
+tools_backup/
+tools_installed.json
+tools_updates.json
+
+# Состояние hpip
+site-packages/
+installed.json
+pypi_cache.json
+
+# Личные скрипты и логи
+t.py
+bot.py
+*.log
