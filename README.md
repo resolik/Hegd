@@ -10,6 +10,7 @@
     make_manifest.py                                  делает tools.json (запускать перед коммитом)
     hpiptool/hpip.py                                  инструмент "hpip"    (pip для Hegd)
     network/hegd_sv.py, network/sv.py                 инструмент "network" (общий доступ к папке в браузере)
+    gittool/gitkit.py                                 инструмент "gitkit"  (GitHub с телефона: clone, status, pull, push)
 
 `icon.png` (512x512) положите в корень сами: в архиве его нет.
 
@@ -36,7 +37,7 @@
 ## Команды
 
     tul list                 что есть в репозитории и что установлено
-    tul install NAME         установить (hpip, network)
+    tul install NAME         установить (hpip, network, gitkit)
     tul updates              есть ли новые версии (сервер опрашивается не чаще раза в 10 минут)
     tul update NAME          обновить один инструмент
     tul update --all         обновить все установленные
@@ -70,3 +71,21 @@ Hegd при запуске сам пишет строку «Tool updates are ava
     buildozer android debug
 
 Не удаляйте `~/.buildozer` и строку `p4a.branch` в `buildozer.spec`.
+
+## gitkit: GitHub с телефона
+
+Программы `git` на Android нет, поэтому `gitkit` работает через API GitHub. Клон это снимок без истории.
+
+    tul install gitkit
+    +tr gitkit.py
+    py gitkit.py token                          проверить токен
+    py gitkit.py clone resolik/Hegd             скачать в папку repos/Hegd
+    py gitkit.py status                         что вы изменили (без сети)
+    py gitkit.py pull                           забрать чужие изменения
+    py gitkit.py push -m "что сделано"          отправить изменения ОДНИМ коммитом (--dry: только показать)
+    py gitkit.py log resolik/Hegd -n 5          последние коммиты
+    py gitkit.py ls resolik/Hegd src            файлы репозитория
+
+Токен: GitHub -> Settings -> Developer settings -> Fine-grained tokens -> Generate. Выберите ОДИН репозиторий,
+Permissions -> Contents: Read and write. Положите токен одной строкой в `github_token.txt` рядом с `gitkit.py`.
+Этот файл в репозиторий не попадёт: он в `.gitignore`, а `push` сам отказывается отправлять файлы, похожие на секреты.
