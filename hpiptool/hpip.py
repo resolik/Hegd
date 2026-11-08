@@ -1,6 +1,6 @@
-"""hpip v0.4.1 - tiny installer for pure-Python wheels, made to run inside Hegd.
+"""hpip v0.4.2 - tiny installer for pure-Python wheels, made to run inside Butter.
 
-Usage (inside Hegd, script lies in the project folder):
+Usage (inside Butter, script lies in the project folder):
     py hpip.py install requests          (installs dependencies too)
     py hpip.py install six==1.16.0
     py hpip.py install six --force       (reinstall)
@@ -51,8 +51,8 @@ import urllib.request
 import zipfile
 from email.parser import Parser
 
-VERSION = "0.4.1"
-UA = "hegd-hpip/" + VERSION
+VERSION = "0.4.2"
+UA = "butter-hpip/" + VERSION
 PYPI = "https://pypi.org/pypi/"
 ALLOWED_HOSTS = ("pypi.org", "files.pythonhosted.org")
 
