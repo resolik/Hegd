@@ -43,8 +43,8 @@ import urllib.parse
 import urllib.request
 import zipfile
 
-VERSION = "1.0"
-UA = "hegd-gitkit/" + VERSION
+VERSION = "1.1"
+UA = "butter-gitkit/" + VERSION
 API = "https://api.github.com"
 API_VERSION = "2022-11-28"
 MAX_JSON = 20 * 1024 * 1024
@@ -743,7 +743,7 @@ def cmd_push(args):
         total += size
     if total > MAX_PUSH_TOTAL:
         raise GkError("more than %d MB in one push: split it" % (MAX_PUSH_TOTAL // 1048576))
-    message = (opts.get("-m") or "").strip() or "Update from Hegd (%d files)" % (len(send) + len(d))
+    message = (opts.get("-m") or "").strip() or "Update from Butter (%d files)" % (len(send) + len(d))
     if len(message) > 500:
         raise GkError("the commit message is too long")
     if "--dry" in flags:
