@@ -1,4 +1,4 @@
-"""net.py v1.0 - small network tools for Hegd: ip, dns, port, ping, trace.
+"""net.py v1.0 - small network tools for Butter: ip, dns, port, ping, trace.
 
     py net.py ip [public]                 addresses of this phone ("public" asks api.ipify.org for the outside one)
     py net.py dns NAME [TYPE] [-s google] what NAME is: without TYPE the phone's own resolver answers (A and AAAA);
@@ -31,7 +31,7 @@ import urllib.parse
 import urllib.request
 
 VERSION = "1.0"
-UA = "hegd-net/" + VERSION
+UA = "butter-net/" + VERSION
 PUBLIC_IP_URL = "https://api.ipify.org"
 DOH = {"cloudflare": "https://cloudflare-dns.com/dns-query", "google": "https://dns.google/resolve"}
 DNS_TYPES = ("A", "AAAA", "CNAME", "MX", "NS", "PTR", "SOA", "TXT")

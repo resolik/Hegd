@@ -1,12 +1,12 @@
-"""sv.py - share a folder in a browser (the script version of +sv).
+"""sv.py - share a folder in a browser.
 
-Usage in Hegd:   py sv.py [folder] [minutes] [up] [local]
+Usage in Butter:   sv [folder] [minutes] [up] [local]     (the same as: py sv.py ...)
   folder   what to share (default: the current folder)
   minutes  how long (default 15, at most 120)
   up       also allow uploads from the browser
   local    only this phone can open it
 Stop it with: cancel
-It needs hegd_sv.py in the same folder.
+It needs butter_sv.py in the same folder.
 """
 import os
 import sys
@@ -15,13 +15,13 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
-import hegd_sv
+import butter_sv
 
 STORAGE = "/storage/emulated/0"
 
 
 def main():
-    folder, minutes, up, local = None, hegd_sv.DEFAULT_MINUTES, False, False
+    folder, minutes, up, local = None, butter_sv.DEFAULT_MINUTES, False, False
     for a in sys.argv[1:]:
         low = a.lower()
         if low == "up":
@@ -36,14 +36,14 @@ def main():
             print("[ERROR] Only one folder can be shared.")
             return
     root = os.path.realpath(folder or os.getcwd())
-    # as a plain script it has no Hegd protection, so keep two safety belts of its own
+    # as a plain script it has no Butter protection, so keep two safety belts of its own
     if root == STORAGE or (root + os.sep).startswith(os.path.join(STORAGE, "Android") + os.sep):
         print("[ERROR] Choose a folder inside the storage, not the whole storage or Android/.")
         return
-    srv = hegd_sv.SvServer(root, upload=up, local_only=local, minutes=minutes, log=lambda t: print("[sv] " + t))
+    srv = butter_sv.SvServer(root, upload=up, local_only=local, minutes=minutes, log=lambda t: print("[sv] " + t))
     try:
         urls = srv.start()
-    except hegd_sv.SvError as e:
+    except butter_sv.SvError as e:
         print("[ERROR] Cannot start: %s" % e)
         return
     print("[SUCCESS] Sharing '%s' for %d min%s%s." % (os.path.basename(root) or root, srv.minutes,
