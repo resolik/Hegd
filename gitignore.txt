@@ -1,0 +1,36 @@
+# ===== Put these lines into the file named  .gitignore  (a dot at the start, no .txt) =====
+
+# Build and cache of Buildozer
+.buildozer/
+bin/
+*.apk
+*.aab
+
+# Python cache
+__pycache__/
+*.pyc
+
+# State the app and its tools create (only matters if the repo folder is also the app folder, /sdcard/butter)
+tools_backup/
+tools_installed.json
+tools_updates.json
+tul_config.json
+site-packages/
+installed.json
+pypi_cache.json
+macros.json
+macros.json.*
+repos/
+
+# SECRETS: the GitHub token of gitkit lives next to gitkit.py. It must never be committed.
+github_token.txt
+*.token
+.env
+
+# Logs (crash.log too) and your own scripts
+*.log
+t.py
+bot.py
+
+# NOT ignored on purpose: hpiptool/ network/ gittool/ asmtool/ sshtool/ asm_examples/ are the sources
+# that tul downloads from GitHub. tools.json is made by make_manifest.py and must be committed.
