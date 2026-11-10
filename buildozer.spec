@@ -6,8 +6,8 @@ p4a.branch = v2024.01.21
 # changing them makes a DIFFERENT app (no update over the old one, the private data stays behind; files in
 # /sdcard/butter stay). If nobody has installed it yet, decide before the first public release (F-Droid, GitHub).
 title = Butter
-package.name = hegd
-package.domain = org.hegd
+package.name = butter
+package.domain = org.butter
 version = 0.1
 
 # ---- the files: main.py and kiwi_core.py are in the same folder as this spec ----
