@@ -1,0 +1,6 @@
+First release! 
+- Human-readable commands (new file, go to, to FOLDER).
+- Built-in AArch64 assembler emulator.
+- Safe mode: system folders are protected, scripts are trusted by hash.
+- SSH support with keys.
+- Tools can be installed via 'tul'.
