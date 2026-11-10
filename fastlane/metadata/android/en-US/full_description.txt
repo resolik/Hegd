@@ -1,0 +1,19 @@
+Butter is a small, safe command line for your Android phone.
+
+Commands read like short sentences: <i>new file notes.txt to Documents</i>, <i>copy photo.jpg to Pictures</i>, <i>unzip archive.zip</i>. There is one name for each action, so you can guess the next command.
+
+<b>Safe by default</b>
+&#8226; System folders are protected from deleting, renaming and editing
+&#8226; Risky commands ask y/n first, and <i>!dry</i> shows what a command would do without doing it
+&#8226; Scripts must be trusted by content: if a file changes, Butter asks again
+
+<b>What you can do</b>
+&#8226; Work with files and folders, zip and unzip, download files in the background
+&#8226; Save a chain of commands as a macro and run it with arguments
+&#8226; Run commands in parallel, or only if a check passes
+&#8226; Optional tools, installed on demand: git for GitHub, ssh with keys, network tools, a tiny web server to share a folder, and an ARM64 assembly emulator
+
+<b>Permission</b>
+Butter asks for all files access, because it works with the files in your storage. It never uploads anything by itself.
+
+Butter is not a full Linux system: there is no real shell, no package manager and no compilers. For those, use Termux.
