@@ -107,10 +107,10 @@ class JschBackend:
         self.autoclass = autoclass
         try:
             self.JSch = autoclass("com.jcraft.jsch.JSch")
-        except Exception:
-            raise SshError("The JSch library is not in this build. Add to buildozer.spec: "
-                           "android.gradle_dependencies = com.github.mwiede:jsch:0.2.22  and build again.")
-
+        except Exception as e:
+            raise SshError("The JSch library is not in this build (%s: %s). Add to buildozer.spec: "
+                           "android.gradle_dependencies = com.github.mwiede:jsch:0.2.22  and build again."
+                           % (type(e).__name__, e))
     def _session(self, user, host, port, key_path, known_hosts, strict, timeout):
         jsch = self.JSch()
         if key_path:
