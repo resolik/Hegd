@@ -33,7 +33,7 @@ import shlex
 import sys
 import time
 
-VERSION = "0.1"
+VERSION = "0.1.1"
 
 NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{0,19}$")
 HOST_RE = re.compile(r"^[A-Za-z0-9]([A-Za-z0-9.\-]{0,251}[A-Za-z0-9])?$|^\[[0-9A-Fa-f:]+\]$")

@@ -45,13 +45,13 @@
    ]
   },
   "ssh": {
-   "version": "0.1",
+   "version": "0.1.1",
    "description": "ssh: run commands and copy files over SSH with keys (needs the JSch library in the build)",
    "files": [
     {
      "path": "sshtool/sshkit.py",
      "name": "sshkit.py",
-     "sha256": "ad9fa8eb3acf9e8c969ceed4bb414504b8d23b8d20abbbbd55ee06a5a31c80c2"
+     "sha256": "f2c0ad916d2cf4f4b1d00b5ddb177d11d978fac888cb3374e9556da6ef996737"
     }
    ]
   },
