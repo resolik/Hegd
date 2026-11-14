@@ -1,0 +1,81 @@
+{
+ "format": 1,
+ "tools": {
+  "hpip": {
+   "version": "0.4.2",
+   "description": "pip for Butter: pure-Python libraries from PyPI, with a registry, freeze and verify",
+   "files": [
+    {
+     "path": "hpiptool/hpip.py",
+     "name": "hpip.py",
+     "sha256": "28ddb38256238c1a08a555665bf8321b8b40a1a04e3f736d1d63c5ac9b9f36be"
+    }
+   ]
+  },
+  "network": {
+   "version": "1.3",
+   "description": "network: share a folder in a browser (sv.py) and ip, dns, port, ping, trace (net.py)",
+   "files": [
+    {
+     "path": "network/butter_sv.py",
+     "name": "butter_sv.py",
+     "sha256": "d16507ba7da148331a5cf6e3e475d6219e5616d507b6f026762e8239b40c8f66"
+    },
+    {
+     "path": "network/sv.py",
+     "name": "sv.py",
+     "sha256": "ace7cbfcf77ff519e8702beb2809f68dd61465d8ae71d62bda5f225eccd9d6de"
+    },
+    {
+     "path": "network/net.py",
+     "name": "net.py",
+     "sha256": "8fb75a7f27d5db99c717ab9896f428c8ed32d1cde5c9dfa4998bf83645c8733d"
+    }
+   ]
+  },
+  "asm": {
+   "version": "0.2",
+   "description": "asm: run AArch64 (ARM64) assembly scripts in a safe emulator, with --trace and --regs",
+   "files": [
+    {
+     "path": "asmtool/asm.py",
+     "name": "asm.py",
+     "sha256": "3402611989fc05e9d0b89ce939c9f8389dee4d26f6bbe2fb3e8c2143197ef5b6"
+    }
+   ]
+  },
+  "ssh": {
+   "version": "0.2",
+   "description": "ssh: run commands and copy files over SSH with keys (needs the JSch library in the build)",
+   "files": [
+    {
+     "path": "sshtool/sshkit.py",
+     "name": "sshkit.py",
+     "sha256": "f7ebff72dbdd59928710e78432e007089d37886b381f42d599a5b024a331622d"
+    }
+   ]
+  },
+  "gitkit": {
+   "version": "1.2",
+   "description": "GitHub from the phone: clone, status, pull, push, log, ls (no git program needed)",
+   "files": [
+    {
+     "path": "gittool/gitkit.py",
+     "name": "gitkit.py",
+     "sha256": "a795a912ac1f1f0ac8c2d50992ccb1e8405cabd6b14208f384f80b78f9329e94"
+    }
+   ]
+  },
+  "bj": {
+   "version": "0.1",
+   "description": "bj: twenty-one (blackjack) against Mika, an ASCII girl. Points only, no money",
+   "files": [
+    {
+     "path": "bjtool/bj.py",
+     "name": "bj.py",
+     "sha256": "c3bbfcc57c8088baae13b5bbd667d49c0b71e0eb94a3c36e0efc8f2bcfea4e1c"
+    }
+   ]
+  }
+ }
+}
