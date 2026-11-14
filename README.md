@@ -13,7 +13,7 @@ macro tidy = del file a.txt | del dir tmp
 
 - **Safe by default.** System folders are protected, risky commands ask `y/n` first, scripts must be trusted by content hash, and `!dry` shows what a command would do without doing it.
 - **Commands you can read.** `new file a.txt to Pictures`, `!chk find file "*.txt" then echo found`. One name for each action, the same on every phone.
-- **Light.** One small app. Extra tools (git, ssh, an ARM64 assembly emulator, a tiny web server) are installed only when you want them, with `tul`.
+- **Light.** One small app. Extra tools (git, ssh, an ARM64 assembly emulator, a tiny web server, a cat who plays blackjack) are installed only when you want them, with `tul`.
 - **Made to learn from.** Clear error messages with a hint, and an assembly emulator that cannot crash the app.
 
 Butter is not a full Linux system: there is no real shell, no `apt`, no compilers. If you need those, use Termux.
@@ -171,6 +171,7 @@ Type `help` in the app for the same list, and `help NAME` for one command. A com
 | `net command` | ip, dns, port, ping, trace: net ip, net dns NAME ... (runs net.py; tul install network) |
 | `sv [folder] [min]` | share a folder in a browser; cancel stops it (runs sv.py; tul install network) |
 | `asm prog.s` | run an ARM64 assembly program in a safe emulator (runs asm.py; tul install asm) |
+| `bj command` | blackjack with Chiqu the cat, points only: bj deal [bet], bj hit, bj stand, bj double, bj points (runs bj.py; tul install bj) |
 | `tul command` | Butter tools: tul install network, tul updates, tul update --all (runs tul.py) |
 | `wakelock on [min]` | keep the processor awake (30 min by default, 480 at most) |
 | `wakelock off` | release the wakelock |
@@ -197,8 +198,42 @@ Tools are small scripts installed with `tul` from this repository. Each gets its
 | `tul install network` | `net ...`, `sv ...` | ip, dns, port, ping, trace; share a folder in a browser |
 | `tul install asm` | `asm prog.s` | Run ARM64 (AArch64) assembly in a safe emulator |
 | `tul install ssh` | `ssh ...` | Run commands and copy files over SSH, with keys only (needs the JSch library in the build, see `buildozer.spec`) |
+| `tul install bj` | `bj ...` | Blackjack against Chiqu, an ASCII cat. Points only, no money |
 
 `tul update --all` updates installed tools. After installing a tool, `trust add TOOL.py` stops the question on every run.
+
+### bj: blackjack with Chiqu
+
+Chiqu is a small ASCII cat who deals the cards, keeps the score and has opinions about your luck. It is classic blackjack (also called twenty-one) with **points only**: no money, nothing to lose. If you run out, Chiqu lends you 50 from the fish money and pretends it never happened.
+
+```
+       /\_/\
+      ( o.o )
+       > ^ <
+      /  |  \
+     (_/   \_)
+Chiqu: "Ready? Your move."
+Dealer: [JD] [??]
+You   : [10S] [8S]  = 18
+Bet 10 | Points 90
+```
+
+Chiqu's face changes with the game: calm while you think, wide-eyed when you win, smug when the cat does. Every move wipes the old text, so you only see the fresh table.
+
+```
+tul install bj
+trust add bj.py         # once, so it stops asking every time
+bj deal 25              new round, bet 25 points (10 if you say nothing; also: bj 25)
+bj hit                  take a card (short: h)
+bj stand                stop here, Chiqu plays the cards (short: s)
+bj double               double the bet, take one card, then stand (short: dd; first move only)
+bj points               your points and results (short: p)
+bj reset --yes          start again from 100 points
+```
+
+**Rules.** Get 21, or as close as you can without going over. Cards 2-10 count as written, J Q K count 10, an Ace counts 11 or 1. Chiqu takes cards until the total is 17 and stops on any 17. Two cards that make 21 (a blackjack) pay 3 to 2. A tie gives your bet back. There is no split and no insurance. Your game is saved in `bj_save.json` next to `bj.py`.
+
+**Never played?** Stand on 17 or more. Hit on 11 or less, you cannot bust. In between, look at Chiqu's open card: a 2-6 is weak and may bust, so stand; a 7 or higher is strong, so hit. Double on 10 or 11 when that card is weak. Chiqu is patient. The cards are not.
 
 ## Reporting problems
 
