@@ -33,7 +33,7 @@ import shlex
 import sys
 import time
 
-VERSION = "0.1.1"
+VERSION = "0.2"
 
 NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{0,19}$")
 HOST_RE = re.compile(r"^[A-Za-z0-9]([A-Za-z0-9.\-]{0,251}[A-Za-z0-9])?$|^\[[0-9A-Fa-f:]+\]$")
@@ -100,17 +100,18 @@ class JschBackend:
 
     def __init__(self):
         try:
-            from jnius import autoclass
+            from jnius import autoclass, cast
         except ImportError:
             raise SshError("SSH needs the Android build with the JSch library (pyjnius is not available here). "
                            "See buildozer.spec: android.gradle_dependencies = com.github.mwiede:jsch:0.2.22")
         self.autoclass = autoclass
+        self.cast = cast
         try:
             self.JSch = autoclass("com.jcraft.jsch.JSch")
-        except Exception as e:
-            raise SshError("The JSch library is not in this build (%s: %s). Add to buildozer.spec: "
-                           "android.gradle_dependencies = com.github.mwiede:jsch:0.2.22  and build again."
-                           % (type(e).__name__, e))
+        except Exception:
+            raise SshError("The JSch library is not in this build. Add to buildozer.spec: "
+                           "android.gradle_dependencies = com.github.mwiede:jsch:0.2.22  and build again.")
+
     def _session(self, user, host, port, key_path, known_hosts, strict, timeout):
         jsch = self.JSch()
         if key_path:
@@ -154,7 +155,7 @@ class JschBackend:
         channel = None
         try:
             session.connect(int(timeout * 1000))
-            channel = session.openChannel("exec")
+            channel = self.cast("com.jcraft.jsch.ChannelExec", session.openChannel("exec"))   # Java needs this cast too
             channel.setCommand(command)
             err_stream = self.autoclass("java.io.ByteArrayOutputStream")()
             channel.setErrStream(err_stream)
@@ -187,7 +188,7 @@ class JschBackend:
         channel = None
         try:
             session.connect(int(timeout * 1000))
-            channel = session.openChannel("sftp")
+            channel = self.cast("com.jcraft.jsch.ChannelSftp", session.openChannel("sftp"))
             channel.connect(int(timeout * 1000))
             if action == "put":
                 channel.put(local, remote)
