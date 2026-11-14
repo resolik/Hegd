@@ -42,6 +42,7 @@ Tools (installed with tul, no "py" needed):
   git ...           GitHub from the phone (gitkit.py)     net ...    ip, dns, port, ping, trace (net.py)
   sv [folder] [min] share a folder in a browser (sv.py)   asm prog.s run ARM64 assembly (asm.py)
   ssh ...           run commands and copy files over SSH with keys (sshkit.py): ssh key new, ssh add, ssh trust, ssh NAME cmd
+  bj ...            blackjack with Chiqu, a cat (bj.py): bj deal [bet], bj hit, bj stand, bj double
 Trust and power:
   trust add file | trust remove file | trust list      scripts that may run without asking
   wakelock on [min] | wakelock off | wakelock status    keep the processor awake
@@ -109,7 +110,7 @@ INFO, WARNING, ERROR, TEXT = "INFO", "WARNING", "ERROR", "TEXT"
 #   CRITICAL worse than ERROR; stops a chain just like ERROR does
 DEBUG, SUCCESS, CRITICAL = "DEBUG", "SUCCESS", "CRITICAL"
 ERROR_KINDS = (ERROR, CRITICAL)
-VERSION = "2026-11-09.5"                   # printed at startup: tells you which file version is really running
+VERSION = "2026-11-14.1"                   # printed at startup: tells you which file version is really running
 # Where people can reach the author: shown at start and by "report". Put your names in; an empty one is hidden.
 CONTACTS = (("Telegram", "@ResolixVozmozen"), ("Discord", "resolikforever"))
 ISSUES_URL = "https://github.com/resolik/Butter/issues"
@@ -126,7 +127,7 @@ WAKE_MAX_MINUTES = 480                     # the longest wakelock: 8 hours
 MAX_TRUST_BYTES = 5 * 1024 * 1024          # a bigger script cannot be trusted (it would be slow to check)
 FAST_WAIT = 0.2                            # a background job that is done within this time answers on the spot
 HIDE_KINDS = (INFO, SUCCESS, DEBUG, TEXT)  # what !hl hides; questions and problems always stay visible
-JOB_COMMANDS = ("download", "zip file", "zip dir", "unzip", "paste", "py", "pip", "asm", "git", "net", "sv", "ssh", "run", "tul", "redo")   # not allowed inside a !chk condition
+JOB_COMMANDS = ("download", "zip file", "zip dir", "unzip", "paste", "py", "pip", "asm", "git", "net", "sv", "ssh", "bj", "run", "tul", "redo")   # not allowed inside a !chk condition
 MACRO_FILE = "macros.json"                  # name -> {"lines": [...]}, lies in the project folder
 MACRO_NAME = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{0,19}$")
 MACRO_RESERVED = ("to", "then", "else", "end", "run", "macro", "here", "list", "show", "del", "cancel")
@@ -225,6 +226,7 @@ HELP = [
         ("net command", "ip, dns, port, ping, trace: net ip, net dns NAME ... (runs net.py; tul install network)"),
         ("sv [folder] [min]", "share a folder in a browser; cancel stops it (runs sv.py; tul install network)"),
         ("asm prog.s", "run an ARM64 assembly program in a safe emulator (runs asm.py; tul install asm)"),
+        ("bj command", "blackjack with Chiqu the cat, points only: bj deal [bet], bj hit, bj stand, bj double, bj points (runs bj.py; tul install bj)"),
         ("tul command", "Butter tools: tul install network, tul updates, tul update --all (runs tul.py)"),
         ("wakelock on [min]", "keep the processor awake (30 min by default, 480 at most)"),
         ("wakelock off", "release the wakelock"),
@@ -486,6 +488,7 @@ class KiwiCore:
             "net": (self.cmd_net, "net ip|dns|port|ping|trace ...", 0, None),
             "sv": (self.cmd_sv, "sv [folder] [minutes] [up] [local]", 0, None),
             "ssh": (self.cmd_ssh, "ssh add|list|remove|key|trust|upload|download|NAME command", 0, None),
+            "bj": (self.cmd_bj, "bj deal [bet] | hit | stand | double | points | reset --yes", 0, None),
             "tul": (self.cmd_tul, "tul command [args]", 0, None),
             "wakelock": (self.cmd_wakelock, "wakelock on [minutes]   |   wakelock off   |   wakelock status", 1, 2),
             "battery": (self.cmd_battery, "battery", 0, 0),
@@ -2603,6 +2606,9 @@ class KiwiCore:
 
     def cmd_ssh(self, args):
         return self.run_tool("ssh", "sshkit.py", "ssh", args)
+
+    def cmd_bj(self, args):
+        return self.run_tool("bj", "bj.py", "bj", args)
 
     # ---------- wakelock and battery ----------
     def cmd_trust_main(self, args):

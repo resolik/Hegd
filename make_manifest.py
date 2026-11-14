@@ -40,7 +40,7 @@ TOOLS = {
         "files": ["gittool/gitkit.py"],
     },
     "bj": {
-        "description": "bj: twenty-one (blackjack) against Mika, an ASCII girl. Points only, no money",
+        "description": "bj: blackjack against Chiqu, an ASCII cat. Points only, no money",
         "version": "auto",
         "files": ["bjtool/bj.py"],
     },
