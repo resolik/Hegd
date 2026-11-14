@@ -67,13 +67,13 @@
    ]
   },
   "bj": {
-   "version": "0.2",
-   "description": "bj: twenty-one (blackjack) against Mika, an ASCII girl. Points only, no money",
+   "version": "0.4",
+   "description": "bj: twenty-one (blackjack) against Chiqu, an ASCII cat. Points only, no money",
    "files": [
     {
      "path": "bjtool/bj.py",
      "name": "bj.py",
-     "sha256": "97956e4367b924cc38a5c54655597a24495fdd35385eead3277d80743ceece5a"
+     "sha256": "6469b9025ff99552117173595d7b3c9da7b32fe59def11dfb1185da4f56f8d92"
     }
    ]
   }
