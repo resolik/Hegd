@@ -1,13 +1,13 @@
-"""bj v0.4 - twenty-one (blackjack) against Chiqu, for Butter. Points only: no money, nothing to lose.
+"""bj v0.6 - blackjack (twenty-one) against Chiqu, for Butter. Points only: no money, nothing to lose.
 
 Inside Butter (after  tul install bj  and  trust add bj.py):
-    py bj.py                 show the table (or how to start)
-    py bj.py deal [BET]      new round; the bet is 10 points if you do not say      (also: py bj.py 25)
-    py bj.py hit             take a card                                            (short: h)
-    py bj.py stand           stop here, Chiqu plays the hand                         (short: s)
-    py bj.py double          double the bet, take exactly one card, then stand      (short: dd; first move only)
-    py bj.py points          your points and your results                           (short: p)
-    py bj.py reset --yes     start again from 100 points
+    bj                       show the table (or how to start)
+    bj deal [BET]            new round; the bet is 10 points if you do not say      (also: bj 25)
+    bj hit                   take a card                                            (short: h)
+    bj stand                 stop here, Chiqu plays the hand                         (short: s)
+    bj double                double the bet, take exactly one card, then stand      (short: dd; first move only)
+    bj points                your points and your results                           (short: p)
+    bj reset --yes           start again from 100 points
 
 Rules: one fresh deck every round. Get 21, or as close as you can without going over. Cards 2-10 count as written,
 J Q K count 10, an Ace counts 11 or 1. Chiqu takes cards until the total is 17 and stops on any 17. Two cards that make
@@ -22,9 +22,9 @@ import random
 import re
 import sys
 
-VERSION = "0.4"
+VERSION = "0.6"
 NAME = "Chiqu"
-CMD = "py bj.py"                 # how the game is started; change it to "bj" if Butter gets a bj command
+CMD = "bj"                       # how the game is started (Butter has the bj command; without it use "py bj.py")
 START_POINTS = 100
 LOAN = 50
 DEFAULT_BET = 10
@@ -36,7 +36,8 @@ CARD_RE = re.compile(r"^(A|10|[2-9]|J|Q|K)[SHDC]$")
 INT_KEYS = ("points", "best", "rounds", "wins", "losses", "pushes", "blackjacks", "loans")
 
 
-CLEAR_MODE = os.environ.get("BJ_CLEAR", "ansi")   # "ansi" wipes the screen, "lines" scrolls it away with empty lines, "off" does nothing
+CLEAR_MODE = os.environ.get("BJ_CLEAR", "lines")   # "lines" scrolls the old text away, "ansi" wipes the screen (Butter does not understand it), "off" does nothing
+CLEAR_LINES = 50                 # how many empty lines push the old text out of sight (more than the screen has rows)
 
 
 def say(text=""):
@@ -44,12 +45,12 @@ def say(text=""):
 
 
 def clear_screen():
-    """The table is a 'window': every move wipes the old text, so Chiqu always stays at the top."""
-    if CLEAR_MODE == "ansi":
+    """The table is a 'window': every move pushes the old text away, so only the fresh table is on the screen."""
+    if CLEAR_MODE == "lines":
+        say("\n" * (CLEAR_LINES - 1))
+    elif CLEAR_MODE == "ansi":
         sys.stdout.write("\033[3J\033[2J\033[H")
         sys.stdout.flush()
-    elif CLEAR_MODE == "lines":
-        say("\n" * 60)
 
 
 class GameError(Exception):          # wrong use of the command: [ERROR], exit code 1
@@ -81,7 +82,7 @@ def cat(mood):
 
 
 LINES = {
-    "welcome": ["Meow! I'm %s. Want to play 21?" % NAME, "Purr... sit down. A round of 21?"],
+    "welcome": ["Meow! I'm %s. Want to play blackjack?" % NAME, "Purr... sit down. A round of blackjack?"],
     "deal": ["Cards are out. Meow!", "Let's play! Hit or stand?", "Ready? Your move."],
     "hit": ["One more card? Brave!", "Here you go. Meow.", "Hmm, that's risky..."],
     "turn": ["Your move!", "Hit or stand?"],
@@ -381,7 +382,7 @@ def cmd_reset(state, args):
 
 
 def cmd_help(state, args):
-    say("bj %s - 21 against %s. Points only." % (VERSION, NAME))
+    say("bj %s - blackjack against %s. Points only." % (VERSION, NAME))
     say("  %s deal [BET]   new round (default bet %d)" % (CMD, DEFAULT_BET))
     say("  %s hit | stand | double" % CMD)
     say("  %s points | reset --yes" % CMD)
