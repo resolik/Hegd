@@ -1,18 +1,18 @@
-"""bj v0.2 - twenty-one (blackjack) against Mika, for Butter. Points only: no money, nothing to lose.
+"""bj v0.4 - twenty-one (blackjack) against Chiqu, for Butter. Points only: no money, nothing to lose.
 
 Inside Butter (after  tul install bj  and  trust add bj.py):
     py bj.py                 show the table (or how to start)
     py bj.py deal [BET]      new round; the bet is 10 points if you do not say      (also: py bj.py 25)
     py bj.py hit             take a card                                            (short: h)
-    py bj.py stand           stop here, Mika plays her hand                         (short: s)
+    py bj.py stand           stop here, Chiqu plays the hand                         (short: s)
     py bj.py double          double the bet, take exactly one card, then stand      (short: dd; first move only)
     py bj.py points          your points and your results                           (short: p)
     py bj.py reset --yes     start again from 100 points
 
 Rules: one fresh deck every round. Get 21, or as close as you can without going over. Cards 2-10 count as written,
-J Q K count 10, an Ace counts 11 or 1. Mika takes cards until she has 17 and stops on any 17. Two cards that make
+J Q K count 10, an Ace counts 11 or 1. Chiqu takes cards until the total is 17 and stops on any 17. Two cards that make
 21 (a blackjack) pay 3 to 2. A tie gives your bet back. There is no split and no insurance. If your points run out,
-Mika lends you 50. The game is saved in bj_save.json next to bj.py.
+Chiqu lends you 50. The game is saved in bj_save.json next to bj.py.
 
 Cards are written like [AS] [10H] [KD] [7C]: rank, then suit (S spades, H hearts, D diamonds, C clubs).
 """
@@ -22,8 +22,8 @@ import random
 import re
 import sys
 
-VERSION = "0.2"
-GIRL = "Mika"
+VERSION = "0.4"
+NAME = "Chiqu"
 CMD = "py bj.py"                 # how the game is started; change it to "bj" if Butter gets a bj command
 START_POINTS = 100
 LOAN = 50
@@ -44,7 +44,7 @@ def say(text=""):
 
 
 def clear_screen():
-    """The table is a 'window': every move wipes the old text, so Mika always stays at the top."""
+    """The table is a 'window': every move wipes the old text, so Chiqu always stays at the top."""
     if CLEAR_MODE == "ansi":
         sys.stdout.write("\033[3J\033[2J\033[H")
         sys.stdout.flush()
@@ -60,57 +60,39 @@ class Notice(Exception):             # a friendly "not now": [INFO], no error
     pass
 
 
-# ---------------------------------------------------------------- Mika
-ART = [
-    '               --+**###******+::',
-    '               --+**###******+::',
-    '           :**%%%%%%%%%%%%%%%%%%#==',
-    '         ==%###%%#%%%%%%%%%%%%%%%%%*::',
-    '         ==%###%%#%%%%%%%%%%%%%%%%%*::',
-    '        +%%%%%%##%%%%%%%%%%%%%%%%###++',
-    '      ++%%%%%%%%%%%%%++%%%%%%%%%%%%%%%-',
-    '      ++%%%%%%%%%%%%%++%%%%%%%%%%%%%%%-',
-    '     :==%%%%%%%%%%##+==%%%%**#%%%###%%*',
-    '     -##%%%%%%%%%*.....+%%%++*##%##%%%-::',
-    '     -##%%%%%%%%%*.....+%%%++*##%##%%%-::',
-    '     :%%%%%%%%%##=##...****##%++%%%%%%=::',
-    '     =##%%%%%%%##-.........::.::%%%%===::',
-    '     =##%%%%%%%##-.........::.::%%%%===::',
-    '     :==%%%%%%%**:...........:%%%%%#==:::',
-    '   ..*%%%%%%%%%**:........*%%%%%%**-::',
-    '   ..*%%%%%%%%%**:........*%%%%%%**-::',
-    '   ==+**%%%%%%%%%#::....++%%%%%%%%%%++',
-    '   --*%%%%%%%%%##+::....::+##%%%%%%%%%%++',
-    '   --*%%%%%%%%%##+::....::+##%%%%%%%%%%++',
-    '  =++#%%%%%%%%%%%#::......:##%%%%%%%%%%%%#::',
-    '  =##%%%%%%%%%%%%###*::.::###%%%%%%%%%%%%*',
-    '  =##%%%%%%%%%%%%###*::.::###%%%%%%%%%%%%*',
-    '  +%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%++',
-    '--#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##-',
-    '--#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##-',
-    '++%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%+',
-]
-ART_INDENT = 1                   # spaces in front of every row of the drawing
+# ---------------------------------------------------------------- Chiqu
+# The drawing: L and R are the eyes, M is the mouth (they change with the mood). Every row is raw text, so backslashes are fine.
+CAT = r"""
+   /\_/\
+  ( L.R )
+   > M <
+  /  |  \
+ (_/   \_)
+""".strip("\n").split("\n")
+CAT_INDENT = 4                   # spaces in front of every row of the drawing
+EYES = {"idle": ("o", "o"), "happy": ("^", "^"), "wow": ("O", "O"),
+        "sad": ("T", "T"), "wink": ("^", "-"), "smug": ("-", "-")}
+MOUTH = {"idle": "^", "happy": "w", "wow": "o", "sad": "n", "wink": "^", "smug": "v"}
 
 
-def girl(mood):
-    """The picture of Mika. One drawing for every mood (the mood is kept in case you add more drawings)."""
-    return [" " * ART_INDENT + row.rstrip() for row in ART]
+def cat(mood):
+    left, right = EYES[mood]
+    return [" " * CAT_INDENT + row.replace("L", left).replace("R", right).replace("M", MOUTH[mood]) for row in CAT]
 
 
 LINES = {
-    "welcome": ["Hi! I'm %s. Want to play 21?" % GIRL, "Sit down! A round of 21?"],
-    "deal": ["Cards are out. Good luck!", "Let's play! Hit or stand?", "Ready? Your move."],
-    "hit": ["One more card? Brave!", "Here you go.", "Hmm, that's risky..."],
+    "welcome": ["Meow! I'm %s. Want to play 21?" % NAME, "Purr... sit down. A round of 21?"],
+    "deal": ["Cards are out. Meow!", "Let's play! Hit or stand?", "Ready? Your move."],
+    "hit": ["One more card? Brave!", "Here you go. Meow.", "Hmm, that's risky..."],
     "turn": ["Your move!", "Hit or stand?"],
     "double": ["Double it?! Bold!", "Ooh, all in on one card!"],
-    "win": ["Eh?! You beat me. Fair and square.", "Nice hand! I'll get you next time.",
+    "win": ["Meow?! You beat me. Fair and square.", "Nice hand! I'll get you next time.",
             "Okay, okay, that one is yours.", "Tch... beginner's luck?"],
     "blackjack": ["Blackjack?! No way... 3 to 2 for you.", "A natural! I'm impressed!"],
-    "lose": ["Mine! Better luck next time~", "I win this one. Cards don't lie.", "Hehe, the house always smiles."],
+    "lose": ["Mine! Better luck next time~", "I win this one. Cards don't lie.", "Purr... the house always smiles."],
     "bust": ["Over 21! Careful, careful~", "Oops, too greedy!", "Bust! What a pity."],
     "push": ["A tie! Your bet is safe.", "Same score. Let's call it even."],
-    "loan": ["Out of points? I'll lend you %d. Shh!" % LOAN],
+    "loan": ["Out of points? I'll lend you %d from my fish money. Shh!" % LOAN],
 }
 OUTCOMES = {"win": "wow", "blackjack": "wow", "lose": "smug", "bust": "smug", "push": "wink"}
 
@@ -219,9 +201,9 @@ def save(state):
 # ---------------------------------------------------------------- drawing the table
 def render(state, mood, line, player, dealer, bet, hide):
     clear_screen()
-    for row in girl(mood):
+    for row in cat(mood):
         say(row)
-    say('%s: "%s"' % (GIRL, line))
+    say('%s: "%s"' % (NAME, line))
     if hide:
         say("Dealer: %s" % show_cards(dealer, True))
     else:
@@ -242,7 +224,7 @@ def show_round(state, mood, line):
 
 # ---------------------------------------------------------------- one round
 def settle(state, rnd, outcome):
-    """Pay out (the bet was already taken at the deal). Returns True if Mika had to lend points."""
+    """Pay out (the bet was already taken at the deal). Returns True if Chiqu had to lend points."""
     bet = rnd["bet"]
     state["rounds"] += 1
     if outcome == "blackjack":
@@ -280,7 +262,7 @@ def end_round(state, rnd, outcome):
     else:
         say("[WARNING] You lose %d points." % bet)
     if loaned:
-        say('%s: "%s"' % (GIRL, pick("loan")))
+        say('%s: "%s"' % (NAME, pick("loan")))
         say("[INFO] You have %d points again." % state["points"])
     else:
         say("[INFO] New round: %s deal [bet]" % CMD)
@@ -346,7 +328,7 @@ def cmd_hit(state, args):
     if total > 21:
         end_round(state, rnd, "bust")
     elif total == 21:
-        stand_now(state, rnd)                                # 21 cannot get better: Mika plays at once
+        stand_now(state, rnd)                                # 21 cannot get better: Chiqu plays at once
     else:
         save(state)
         show_round(state, "idle", pick("hit"))
@@ -377,9 +359,9 @@ def cmd_table(state, args):
         show_round(state, "idle", pick("turn"))
         return
     clear_screen()
-    for row in girl("happy"):
+    for row in cat("happy"):
         say(row)
-    say('%s: "%s"' % (GIRL, pick("welcome")))
+    say('%s: "%s"' % (NAME, pick("welcome")))
     say("[INFO] You have %d points. Start: %s deal [bet]" % (state["points"], CMD))
 
 
@@ -388,7 +370,7 @@ def cmd_points(state, args):
     say("Rounds: %d - won %d (blackjacks %d), lost %d, tied %d" % (
         state["rounds"], state["wins"], state["blackjacks"], state["losses"], state["pushes"]))
     if state["loans"]:
-        say("Mika lent you points %d time(s)." % state["loans"])
+        say("%s lent you points %d time(s)." % (NAME, state["loans"]))
 
 
 def cmd_reset(state, args):
@@ -399,7 +381,7 @@ def cmd_reset(state, args):
 
 
 def cmd_help(state, args):
-    say("bj %s - 21 against %s. Points only." % (VERSION, GIRL))
+    say("bj %s - 21 against %s. Points only." % (VERSION, NAME))
     say("  %s deal [BET]   new round (default bet %d)" % (CMD, DEFAULT_BET))
     say("  %s hit | stand | double" % CMD)
     say("  %s points | reset --yes" % CMD)
