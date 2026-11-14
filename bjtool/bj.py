@@ -1,4 +1,4 @@
-"""bj v0.1 - twenty-one (blackjack) against Mika, for Butter. Points only: no money, nothing to lose.
+"""bj v0.2 - twenty-one (blackjack) against Mika, for Butter. Points only: no money, nothing to lose.
 
 Inside Butter (after  tul install bj  and  trust add bj.py):
     py bj.py                 show the table (or how to start)
@@ -22,7 +22,7 @@ import random
 import re
 import sys
 
-VERSION = "0.1"
+VERSION = "0.2"
 GIRL = "Mika"
 CMD = "py bj.py"                 # how the game is started; change it to "bj" if Butter gets a bj command
 START_POINTS = 100
@@ -36,8 +36,20 @@ CARD_RE = re.compile(r"^(A|10|[2-9]|J|Q|K)[SHDC]$")
 INT_KEYS = ("points", "best", "rounds", "wins", "losses", "pushes", "blackjacks", "loans")
 
 
+CLEAR_MODE = os.environ.get("BJ_CLEAR", "ansi")   # "ansi" wipes the screen, "lines" scrolls it away with empty lines, "off" does nothing
+
+
 def say(text=""):
     print(text)
+
+
+def clear_screen():
+    """The table is a 'window': every move wipes the old text, so Mika always stays at the top."""
+    if CLEAR_MODE == "ansi":
+        sys.stdout.write("\033[3J\033[2J\033[H")
+        sys.stdout.flush()
+    elif CLEAR_MODE == "lines":
+        say("\n" * 60)
 
 
 class GameError(Exception):          # wrong use of the command: [ERROR], exit code 1
@@ -50,30 +62,40 @@ class Notice(Exception):             # a friendly "not now": [INFO], no error
 
 # ---------------------------------------------------------------- Mika
 ART = [
-    '          -+*##****+:',
-    '       :*%%%%%%%%%%%%#=',
-    '      =%##%#%%%%%%%%%%%*:',
-    '     +%%%%#%%%%%%%%%%%##+',
-    '    +%%%%%%%%%+%%%%%%%%%%-',
-    '   :=%%%%%%%#+=%%%*#%%##%*',
-    '   -#%%%%%%*-::+%%+*#%#%%-:',
-    '   :%%%%%%#=#-:***#%+%%%%=:',
-    '   =#%%%%%#-:::::-=-=%%%==:',
-    '   :=%%%%%*::::::::=%%%#=::',
-    '  .*%%%%%%*:::::-*%%%%*-:',
-    '  =+*%%%%%%#=---+%%%%%%%+',
-    '  -*%%%%%%#+=---=+#%%%%%%%+',
-    ' =+#%%%%%%%#=----=#%%%%%%%%#:',
-    ' =#%%%%%%%%##*=:=##%%%%%%%%*',
-    ' +%%%%%%%%%%%%%%%%%%%%%%%%%%+',
-    '-#%%%%%%%%%%%%%%%%%%%%%%%%%%#-',
-    '+%%%%%%%%%%%%%%%%%%%%%%%%%%%%+',
+    '               --+**###******+::',
+    '               --+**###******+::',
+    '           :**%%%%%%%%%%%%%%%%%%#==',
+    '         ==%###%%#%%%%%%%%%%%%%%%%%*::',
+    '         ==%###%%#%%%%%%%%%%%%%%%%%*::',
+    '        +%%%%%%##%%%%%%%%%%%%%%%%###++',
+    '      ++%%%%%%%%%%%%%++%%%%%%%%%%%%%%%-',
+    '      ++%%%%%%%%%%%%%++%%%%%%%%%%%%%%%-',
+    '     :==%%%%%%%%%%##+==%%%%**#%%%###%%*',
+    '     -##%%%%%%%%%*.....+%%%++*##%##%%%-::',
+    '     -##%%%%%%%%%*.....+%%%++*##%##%%%-::',
+    '     :%%%%%%%%%##=##...****##%++%%%%%%=::',
+    '     =##%%%%%%%##-.........::.::%%%%===::',
+    '     =##%%%%%%%##-.........::.::%%%%===::',
+    '     :==%%%%%%%**:...........:%%%%%#==:::',
+    '   ..*%%%%%%%%%**:........*%%%%%%**-::',
+    '   ..*%%%%%%%%%**:........*%%%%%%**-::',
+    '   ==+**%%%%%%%%%#::....++%%%%%%%%%%++',
+    '   --*%%%%%%%%%##+::....::+##%%%%%%%%%%++',
+    '   --*%%%%%%%%%##+::....::+##%%%%%%%%%%++',
+    '  =++#%%%%%%%%%%%#::......:##%%%%%%%%%%%%#::',
+    '  =##%%%%%%%%%%%%###*::.::###%%%%%%%%%%%%*',
+    '  =##%%%%%%%%%%%%###*::.::###%%%%%%%%%%%%*',
+    '  +%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%++',
+    '--#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##-',
+    '--#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##-',
+    '++%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%+',
 ]
+ART_INDENT = 1                   # spaces in front of every row of the drawing
 
 
 def girl(mood):
     """The picture of Mika. One drawing for every mood (the mood is kept in case you add more drawings)."""
-    return [row.rstrip() for row in ART]
+    return [" " * ART_INDENT + row.rstrip() for row in ART]
 
 
 LINES = {
@@ -196,6 +218,7 @@ def save(state):
 
 # ---------------------------------------------------------------- drawing the table
 def render(state, mood, line, player, dealer, bet, hide):
+    clear_screen()
     for row in girl(mood):
         say(row)
     say('%s: "%s"' % (GIRL, line))
@@ -353,6 +376,7 @@ def cmd_table(state, args):
     if state["round"]:
         show_round(state, "idle", pick("turn"))
         return
+    clear_screen()
     for row in girl("happy"):
         say(row)
     say('%s: "%s"' % (GIRL, pick("welcome")))
@@ -400,16 +424,18 @@ def main(argv):
     if handler is None:
         say("[ERROR] Unknown command '%s'. Try: %s help" % (command, CMD))
         return 1
+    damaged = False
     try:
         state, damaged = load()
-        if damaged:
-            say("[WARNING] The save file was damaged, so we start again with %d points." % START_POINTS)
         handler(state, rest)
     except Notice as e:
         say("[INFO] %s" % e)
     except GameError as e:
         say("[ERROR] %s" % e)
         return 1
+    finally:
+        if damaged:
+            say("[WARNING] The save file was damaged, so we start again with %d points." % START_POINTS)
     return 0
 
 
